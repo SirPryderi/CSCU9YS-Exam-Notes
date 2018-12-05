@@ -3,17 +3,8 @@ Security And Forensics
 
 Table of Contents
 ------------------------
+- [ ] TODO!
 
-Chapters to read
------------------------
-1,9,10,12
-
-Encryption - DES
-See SiC, p68-72 & p733-748
-Encryption - AES
-See SiC, p72-75 & p748-754
-Encryption - RSA
-See SiC, p77-78, p767-773 
 
 Adversaries and Attacks
 ---------------------------------
@@ -175,6 +166,20 @@ Computer forensics is used by:
 - Individuals
     - use of digital evidence as support of civil cases
 
+### The Incident Response Process
+> TODO
+
+### Data Collection
+> TODO
+#### Response Toolkits
+#### Recording Information
+
+### Data Analysis
+> TODO
+##### Windows
+##### Unix
+##### Networking
+
 Cryptography
 -------------------
 Cryptography is the study and practice of **protecting information** by **data encoding** and **transformation techniques**.
@@ -264,7 +269,7 @@ There are two main types of ciphers: **stream ciphers** and **block ciphers**.
     - Some require the whole plaintext to encrypt
     - They don't leave patterns in the text
 
-**#### Confusing vs Diffusing
+#### Confusing vs Diffusing
 There is also a distinction between **confusing** vs **diffusing** ciphers.
 
 **Confusing ciphers**
@@ -320,7 +325,7 @@ Method:
 - Shift and Exclusive $$OR$$ — adds both confusion and diffusion
 - Add sub key element – adds confusion and introduces key binding
 
-##### RSA
+##### Rivest-Shamir-Adelman (RSA)
 RSA is an **asymmetric** cipher, using a set of **public** and **private** keys.
 
 In RSA:
@@ -330,10 +335,113 @@ In RSA:
 Where $$e$$ and $$d$$ are the two keys.
 
 #### Hash Functions
+A **hash function** is a one-way function that can be used to map data of **arbitrary size** to data of a **fixed size**. The values returned by a hash function are called *hash values*, *hash codes*, *digests*, or simply *hashes*.
+
+Hash functions are used in **data integrity**, as even a bit of difference in the input data, would return a totally different hash value. So it easy to spot if the data has been tampered with. 
+
+Hash function are also used in **authorisation**, as they are generally used to store passwords in databases, so that they cannot be reversed.
+
+Common hashing functions are:
+- **MD5** — Message Digest 5
+- **SHA** — Secure Hash Algorithm (family of three algorithms)
+    - **SHA-1** – Fixed to 160 bits digest
+    - **SHA-2** – Variable digest size: 224, 256, 384 or 512.
+    - **SHA-3** – Final version. Arbitrary digest size.
+
 #### Key Exchange
+Asymmetric keys allow a receiver $$R$$ to ask a sender to $$S$$ so that a message that only $$R$$ is able to decode, even though $$R$$ has published an encryption key.
+
+HTTPS, being based on TLS/SSL, uses key exchange and certificates to create a shared key, to create a secure channel that is then encrypted with a symmetric algorithm.
+
+##### Diffie-Hellman
+Diffie-Hellman is a key exchange algorithm and
+allows two parties to establish, over an **insecure
+communications channel**, a **shared secret key** that
+only the two parties know, even without having
+shared anything beforehand. 
+
+**Note**: Although it uses the same principles of _private_ and _public_ key, Diffie-Hellman is **not** an asymmetrical encryption algorithm, as no encryption happens. On the other hand, it's a secure method of **creating** a shared private key, so that the communication can be encrypted using a symmetric encryption algorithm. It is, however, an essential building-block, and was in fact the base upon which asymmetric crypto was later built.
+
+![Key Exchange](https://i.stack.imgur.com/n4jBE.png)
+
+Alice and Bob exchange a large prime modulus $$p$$ and a generator $$g$$ (both represented as the common paint).
+
+Alice and Bob separately decide two private numbers, $$s$$ and $$r$$ respectively (secret colours). Then they compute the to public keys as follows:
+
+A: $$A_p = g^s\mod{p}$$
+
+B: $$B_p = g^r\mod{p}$$
+
+And publicly  exchange $$A_p$$ and $$B_p$$.
+
+Then they both execute:
+
+A: $$A_k = (B_p)^s \mod{p}$$
+
+B: $$B_k = (A_p)^r \mod{p}$$
+
+And here's the magic:
+
+$$A_k = B_k = key$$
+
+Both Alice and Bob have generated the same $$key$$, without that it was sent over an unsecure channel. At this point, Alice and Bob can use $$key$$ to communicate on a channel encrypted with symmetric algorithms.
+
+In order for Eve, an eavesdropper, to figure out $$key$$, she would have to solve $$key=(g^s \mod {p})^r \mod {p}$$, which is (in principle) computationally hard.
+
+> Okay, I think I actually understood this, my head is about to explode, bye.
+
 #### Digital Signatures
-#### Certificates
+Digital signatures guarantee that a particular identity (person/organisation) sent a message.
+
+Digital signatures need to be:
+- Unique — Impossible to forge.
+- Authentic — Only the sender should be able to send a given signed message
+- Immutable — It shouldn't be possible to change a signed message
+- Finite – The sender should not be able to send the signed message twice
+
+Asymmetric Digital Signatures rely on the fact that algorithms such as RSA are commutative:
+
+$$P = E(D(P, K_1), K_2) = E (D(P, K_2), K_1)$$
+
+> This is probably wrong in the slides.
+
+Meaning that a private key of a set can be used to:
+1. Decrypt a message only intended for the recipient, which may be encrypted by anyone having the public key (**asymmetric encrypted transport**).
+2. Encrypt a message which may be decrypted by anyone, but which can only be encrypted by one person (**signature**).
+
+The process:
+
+**Alice** sends a cipher text version $$C$$ of the message $$P$$ such that $$C = E(P, K_{a-priv})$$.
+
+**Bob** performs the operation $$P_1 = D(C, K_{a-pub})$$, which is equivalent to $$D(E(P, K_{a-priv}), K_{a-pub})$$.
+
+If $$P_1 = P$$ the message is guaranteed to be from Alice. If $$P_1 ≠ P$$, the message was not from Alice, or it was tampered with.
+
+#### Digital Certificates
+A **digital certificate**, also known as a **public key certificate** or **identity certificate**, is an electronic document used to prove the **ownership** of a public key. The certificate includes information about the **key**, information about the identity of its owner (called the **subject**), and the digital signature of an entity that has verified the certificate's contents. 
+
+If the signature is valid, and the software examining the certificate trusts the issuer (CA), then it can use that key to communicate securely with the certificate's subject.
+![Digital Certification Process](https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/PublicKeyCertificateDiagram_It.svg/550px-PublicKeyCertificateDiagram_It.svg.png)
+
+Steps:
+1. The developer:
+    1. Generates their own public/private key pair
+    2. Creates a Certificate Signing Request (CSR) containing information about the identity
+    3. Sends CSR to Certificate Authority (CA)
+2. Certificate Authority:
+    1. Checks Integrity of CSR
+    2. Checks authenticity of CSR ID
+    3. CA Creates a certificate containing identity and signed via CA private key
+    4. The certificate public key is available, allowing the CA signature to be checked via decryption
+3. The developer:
+    1. Publishes an application
+    2. Signs it with the private key and provides CA signed certificate as verification
+    3. The developer's public key verifies the app, the CA's public key decrypts the certificate and indicates that the developer's identity is valid.
+
 #### Trust
+Digital certificates allow to establish a trusted connection between two parties that have never met. This is a centralised approach, because it all depends on the CAs to be valid and trustworthy.
+
+For both political and security reason, it could be argued that the certificate authority shouldn't be centralised, rather be distributed between all the peers on the network, this leads to the creation of blockchain, where the trust is given by the majority of the peers accepting something as true.
 
 Securing Software
 --------------------------
