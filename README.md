@@ -1,3 +1,5 @@
+
+If you're seeing ugly html here, please visit the the website, as linked above. Github default readme parsing won't support math formulas, and this document makes use of them.
 <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
 Security And Forensics
 ===================
@@ -151,7 +153,7 @@ Computer Forensics
 ----------------------------
 Computer forensics is the practice of collecting, analysing and reporting on digital data in a way that is legally admissible. It can be used in the detection and prevention of crime and in any dispute where evidence is stored digitally.
 
-A **digital evidence** is any piece of information being subject to human intervention or not, that can be extracted from a computer, that is presented in a human-readable format.
+A **digital evidence** is any piece of information being subject to human intervention or not, that can be extracted from a computer, that is presented in a human-readable format, for instance, to be presented in a court of law.
 
 Computer forensics is used by:
 - Criminal prosecutors
@@ -168,18 +170,117 @@ Computer forensics is used by:
     - use of digital evidence as support of civil cases
 
 ### The Incident Response Process
-> TODO
+#### Preparation
+During this phase a Incident Report Team (IRT) is set up, and the System is prepared to avoid, mitigate and logs eventual attacks.
 
-### Data Collection
-> TODO
-#### Response Toolkits
-#### Recording Information
+- **Checksum**
+    - Make a checksum of all the relevant files on a clean machine
+    - Store the checksums on a non-networked machine so that they cannot be altered
+    - Update the checksums if the critical files are updated (e.g. software update)
+- **Logging**
+    - Configure full logging
+    - Configure remote logging, if local machine logs get deleted
+- **Defences**
+    - Install all updates and patches
+    - Disable/Uninstall unused software and services
+    - Update all default passwords
+    - Have updated and redundant backups
+- **Network**
+    - Set up firewall
+    - Set up DMZ (perimeter network)
+    - Set up Access Control List for router
+        - Only whitelisted devices should be allowed
+    - Maintain an accurate map of the network topology
+    - Encrypt network traffic where possible
+    - Require network authentication
+- **Policy**
+    - Make sure that the weakest ring of the security chain, humans, are behaving according to a strict policy
+    - Do background checks
+    - Make sure that the company policy allows the IRT to read through hard drives and emails
 
-### Data Analysis
-> TODO
-##### Windows
-##### Unix
-##### Networking
+#### Detection
+Prepare the system so that if an intrusion happens, it is detected and an appropriate response is followed.
+
+#### Initial Response
+Toolkit:
+- MultiOS bootable machine
+    - Windows
+    - Linux
+- Forensics Software
+    - EnCase
+    - SANS
+    - Wireshark
+- Clean bootable USB drive
+- Ascii/byte/hex editor
+- Disk write blocking software
+- Hash of the toolkit
+- Image of the toolkit
+
+Recording the circumstances of the intrusion, and inform involved parties is key.
+
+#### Data Collection
+Collecting data from the affected computers is fundamental to understand what is the magnitude of the damage, and see if it has affected any other machine in the network.
+
+- RAM
+- Timestamps
+- Current users
+- Current processes
+- Open Sockets
+- Application Listening on sockets
+- Complete list of external systems that have a current or recent connection to the system (ssh, telnet, remote desktop)
+- Timestamps for all files
+- Copy of system registry and configuration files
+
+#### Data Analysis
+Once the data has been collected from the victim machine, they are moved to another machine to be analysed.
+
+- **Examine running processes**
+    - Examine process ownership
+    - Examine process tree
+    - Cross check with list of open sockets
+    - Scan memory for executables and suspicious strings
+    - Submit binaries to anti-virus software for analysis
+    - Examine binaries with hex code
+- **Check**
+    - RAM
+    - Fee space for deleted files
+    - Logs
+    - Changes to users/permissions
+    - Swap files
+    - Recycle bin
+    - Recently changed files
+    - Unusual file names
+- **Analyse network**
+    - Captured network traffic can be analysed with software like Wireshark
+    - Check router logs
+
+### Media Forensics
+#### Digital Watermarking
+Digital watermarking identifies the author of a media, embedding the information directly on the image, in a way that is imperceptible, robust and secure.
+
+Applications:
+- Copyright protection
+- Owner identification
+- Content authentication
+- Broadcast monitoring
+- Transaction tracking
+- Digital rights management (DRM)
+- Tamper proofing
+
+#### Image Forensics
+Kids that downloaded a pirate copy of Photoshop (and dictators alike) tend to manipulate pictures. How can an educated computer science student with too much free time spot these fakes? Let's find out in 404 simple steps!
+- Repeated patterns
+- Gross logical error
+- Images cut badly with Microsoft Paint should be a given, yes?
+- Direction of lighting/shadows (lighting discrepancies)
+- Eyes twinkles (specular highlights)
+- Camera fingerprint
+    - Each camera model produces an unique noise due the sensor
+- Images come with EXIF metadata
+    - Location
+    - Time 
+    - Camera model
+    - They can all be spoofed, of course! :)
 
 Cryptography
 -------------------
