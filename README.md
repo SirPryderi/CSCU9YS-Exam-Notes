@@ -316,10 +316,6 @@ Automated detection can have two approaches:
     - Look for n-gram (known pieces of code)
 
 ###### Buffer Overflow Detection
-A **buffer overflow**, or *buffer overrun*, is an anomaly where a program, while writing data to a buffer, overruns the buffer's boundary and overwrites adjacent memory locations. This can be exploited by an attacker to inject malicious code in memory.
-
-![Buffer Overflow Attack](https://ebrary.net/imag/computer/rao_tish/image039.gif)
-
 Machine learning can be used to detect buffer overflow vulnerability in both source code and compile machine code.
 
 ###### Malicious detection
@@ -678,24 +674,152 @@ Securing Software
 ### Managing Passwords
 When designing a system, it is best to decide not to store passwords as plaintext, as they would be vulnerable in case of a breach.
 
-Normally, passwords are stored as _salted_ hashes. A salt is to prevent that someone creates a `plaintext -> hash` table (_rainbow tables_), that would be easy to search. A salt is stored along the username and is added to the password (hence the name), so that is randomised. A salt is a random sequence of bytes. This way, even if two users have the same password, the salted hash will be different.
+Normally, passwords are stored as _salted_ hashes, since reversible encryption is not required. A salt is to prevent that someone creates a `plaintext -> hash` table (_rainbow tables_), that would be easy to search. A salt is stored along the username and is added to the password (hence the name), so that is randomised. A salt is a random sequence of bytes. This way, even if two users have the same password, the salted hash will be different.
 
 $$stored = hash(password + salt)$$
 
+When the users enters a password $$p_1$$ to attempt the login, the salt $$salt$$ is fetched from the username.
+
+$$s_1 = hash(p_1 + salt)$$
+
+if $$s_1 = stored$$ the user is authenticated.
+
 ### Estimating Program Security
+- Core software testing investigates
+    - Software Design Requirements
+    - User Requirements
+    - Boundary Condition
+- Inadvertent Code Flaws
+    - Validation
+        - Improper validation
+        - Improper permission checks
+    - Domain
+        - Data access controls
+        - A user has access to data they are not authorised
+    - Serialisation
+        - Program control flow
+    - Identification/Authentication
+        - Invalid/weak ID checks
+    - Boundary Conditions
+        - Value limits (and 0)
+        - Data collection
+    - Logic errors
+
 ### Buffer Overflow
+A **buffer overflow**, or *buffer overrun*, is an anomaly where a program, while writing data to a buffer, overruns the buffer's boundary and overwrites adjacent memory locations. This can be exploited by an attacker to inject malicious code in memory.
+
+![Buffer Overflow Attack](https://ebrary.net/imag/computer/rao_tish/image039.gif)
+
+Programming in low level languages like **C/C++** (C, especially) makes it more likely to introduce buffer overflow vulnerabilities. **Java/C#** validate the buffer size at run time (making them slower), but are relatively safe on that point of view.
+
 ### Incompatible or Unexpected Data
+If a conversion between two data types is possible (e.g. a 32 bit float to 32 bit integer), but not expected, it might result on an overflow (the number rolling over). This put the system in an inconsistent state (imagine it's a bank balance!), and/or crash it entirely. It might be even possible to inject malicious code.
+
 ### Escaped Sequences
+Websites that uses scripting languages, are vulnerable to escaped strings being sent by the user that might get executed.
+
+#### SQL Injection
+It relies on escaping the intended use of a form field, so that an SQL query could be constructed and injected.
+
+![xkcd on SQL Injection](https://imgs.xkcd.com/comics/exploits_of_a_mom.png)
+
+A typical attack consists in exploiting this vulnerability and gaining administrator rights to the website.
+
+![SQL Injection](https://www.cloudflare.com/img/learning/security/threats/sql-injection-attack/sql-injection-infographic.png)
+
+In order to prevent this (and similar attacks), it important to properly validate and sanitise inputs from user.
+
 
 Rogue Software
 ----------------------
 
+### Types of malware
+Malicious software can be classified according to the way they propagate:
+- **Virus** – Attaches itself to a program and runs with it
+- **Trojan** – A decoy program distributed with the intent of hiding malicious code
+- **Worm** – Spreads itself over the network (including emails)
+
+Or on the way they are activated:
+- **Time Bomb** — Activates the malicious code after a certain time
+- **Logic Bomb** — Activates the malicious code when certain conditions are met
+- **Back Door** — Allows the user to connect to a machine/program remotely
+
+Finally, they can also be classified on what they do
+- Shell (remote access)
+- Key Logger
+- Data deletion
+- Security software disabler
+- DoS
+
+### Structure of a malware
+A malware consists of three elements:
+- **Execution Logic**
+    - The code that makes the software run
+    - It is usually hidden inside legitimate programs
+- **Propagation Code**
+    - The code required for it to spread towards:
+        - New files
+        - Over the network
+- **The Payload**
+    - The code that is carried by the malware and does the _damage_
+
+### Computer Viruses
+Not all malware are viruses. A virus is a specific type of malware that spreads by attaching itself to a program, so that when that program is executed by the user, the virus is executed as well.
+
+### Trojans
+A Trojan horse is any malicious computer program which misleads users of its true intent. They usually involve a legitimate or fake program, which has an embedded malicious code. Their payload usually involves a backdoor, that gives remote access to the attacker.
+
+### Worms
+Worms are stand-alone computer programs that spread over the network autonomously,  usually exploiting vulnerabilities.
+
+### Detection of rogue programs
+Rogue programs are usually detected by 
+- what they do
+- their signature
+- system files being altered
+
 Securing Network
-------------
+-------------------------
 Three threat exists when trying to access a networked service:
 - The user pretends to be another user
 - The user alters the network address of a workstation
 - The user eavesdrop on exchanges and use a replay attack
+
+### Network Attacks
+- Reconnaissance
+    - Social Engineering
+    - Scans
+        - IP scans
+        - Port scans
+        - Vulnerability scans
+        - Fingerprint analysis (OS, services, etc. detection)
+- Spoofing
+    - Masquerading
+    - Session Hijacking
+    - Man in the Middle
+        - ARP/DNS poisoning
+- Denial of Service
+    - DoS
+    - DDOS
+        - Usually sent from zombie PCs infected by a trojan
+    - Smurf
+        - Send in broadcast a ping with a forged sender IP
+        - All machines reply to that IP address 
+
+### Network Defences
+- Firewalls
+    - Allows only trusted and whitelisted connections
+- Demilitarised Zone (DMZ)
+    - Separates the internal network from a public one
+- Virtual Private Network (VPN)
+    - Allows user to access an internal network from outside in a secure manner
+- Intrusion Detection System (IDS)
+- Honey Pots
+    - A highly-monitored machine deliberately left vulnerable, that will warn if under attack
+- Vulnerability Scanners
+    - Scan computers for known vulnerabilities... before the bad guys find out.
+- SSL/TSL 
+    - An application-layer that secures the communication happening on the transport layer, establishing a secure connection between two hosts.
 
 ### Kerberos
 > **Kerberos** (/ˈkɜːrbərɒs/) is a computer network authentication protocol that works on the basis of tickets to allow nodes communicating over a non-secure network to prove their identity to one another in a secure manner. Kerberos builds on symmetric key cryptography and requires a trusted third party, and optionally may use public-key cryptography during certain phases of authentication.
